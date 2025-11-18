@@ -123,8 +123,5 @@ icorp-test/
 ## Muallif
 
 Sizning ismingiz
-GitHub: https://github.com/USERNAME
+GitHub: https://github.com/nodirbekerkabayev
 
-## Litsenziya
-
-MIT License
