@@ -1,59 +1,130 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# iCorp Test API - Laravel Implementation
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Test API bilan ishlash vazifasi - Laravel web controller yechimi.
 
-## About Laravel
+## Vazifa tavsifi
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+Test API bilan HTTP so'rovlar orqali ishlash va ma'lumotlarni qayta ishlash ko'nikmalarini ko'rsatish.
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Algoritm
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+1. **POST so'rov** - `https://test.icorp.uz/interview.php` ga JSON yuborish
+2. **Webhook qabul qilish** - ikkinchi kod qismini olish
+3. **Kodlarni birlashtirish** - ikkala qismni qo'shish
+4. **GET so'rov** - birlashgan kod bilan final xabarni olish
 
-## Learning Laravel
+## O'rnatish
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+### Talablar
+- PHP >= 8.1
+- Composer
+- ngrok (webhook uchun)
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+### Qadamlar
 
-## Laravel Sponsors
+```bash
+# Repository ni clone qiling
+git clone https://github.com/USERNAME/icorp-test.git
+cd icorp-test
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+# Dependencies o'rnatish
+composer install
 
-### Premium Partners
+# .env faylini yaratish
+cp .env.example .env
+php artisan key:generate
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+# Cache tozalash
+php artisan config:clear
+php artisan cache:clear
+```
 
-## Contributing
+## Ishlatish
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+### 1. Laravel serverini ishga tushirish
 
-## Code of Conduct
+```bash
+php artisan serve
+```
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+Server `http://127.0.0.1:8000` da ishga tushadi.
 
-## Security Vulnerabilities
+### 2. ngrok orqali webhook URL olish
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+Yangi terminal oynasida:
 
-## License
+```bash
+ngrok http 8000
+```
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+Ngrok sizga webhook URL beradi, masalan: `https://abcd1234.ngrok.io`
+
+### 3. Web interfeys orqali test qilish
+
+1. Brauzerda `http://127.0.0.1:8000` ni oching
+2. **Webhook URL** maydoniga ngrok URL ni kiriting:
+   ```
+   https://YOUR-NGROK-ID.ngrok.io/api-test/webhook
+   ```
+3. **Xabar** maydoniga o'z xabaringizni kiriting (ixtiyoriy)
+4. "**Jarayonni Boshlash**" tugmasini bosing
+5. Bir necha soniya kuting (webhook kelguncha)
+6. "**Status Tekshirish**" tugmasini bosing
+7. Ikkala kod qismi ham tayyor bo'lgandan keyin "**Final Xabarni Olish**" tugmasini bosing
+
+## Fayl tuzilishi
+
+```
+icorp-test/
+├── app/
+│   └── Http/
+│       ├── Controllers/
+│       │   └── ApiTestController.php    # Asosiy controller
+│       └── Middleware/
+│           └── VerifyCsrfToken.php      # CSRF konfiguratsiyasi
+├── routes/
+│   └── web.php                          # Route'lar
+├── resources/
+│   └── views/
+│       └── api-test.blade.php           # Web interface
+└── README.md
+```
+
+## API Endpoints
+
+| Method | URL | Tavsif |
+|--------|-----|--------|
+| GET | `/` | Asosiy web sahifa |
+| POST | `/api-test/start` | POST so'rov yuborish va jarayonni boshlash |
+| POST | `/api-test/webhook` | Webhook endpoint (API bu yerga kod yuboradi) |
+| GET | `/api-test/status` | Kod qismlari statusini tekshirish |
+| GET | `/api-test/final` | Final xabarni olish (GET so'rov) |
+
+## Texnologiyalar
+
+- **Laravel 11** - PHP framework
+- **Tailwind CSS** - UI styling
+- **ngrok** - Webhook tunnel
+- **Laravel HTTP Client** - API so'rovlar uchun
+- **Laravel Cache** - Ma'lumotlarni vaqtinchalik saqlash
+
+## Muammolarni hal qilish
+
+### Webhook kelgani yo'q
+- ngrok ishlab turganligini tekshiring
+- URL to'g'ri kiritilganligini tekshiring (https bilan)
+- ngrok terminaldagi loglarni ko'ring
+
+### 500 xatoligi
+- `storage/logs/laravel.log` faylini tekshiring
+- Cache tozalang: `php artisan cache:clear`
+- Permission tekshiring: `chmod -R 775 storage bootstrap/cache`
+
+## Muallif
+
+Sizning ismingiz
+GitHub: https://github.com/USERNAME
+
+## Litsenziya
+
+MIT License
